@@ -19,6 +19,25 @@ const footerLink = {
   marginLeft: 4
 };
 
+// Mapping for common import names to PyPI package names
+const IMPORT_TO_PYPI = {
+  pil: "pillow",
+  pillow: "pillow",
+  cv2: "opencv-python",
+  sklearn: "scikit-learn",
+  mpl_toolkits: "matplotlib", // e.g. mpl_toolkits.basemap
+  bs4: "beautifulsoup4",
+  yaml: "pyyaml",
+  matplotlib: "matplotlib",
+  pd: "pandas",
+  np: "numpy",
+  tf: "tensorflow",
+  torch: "torch",
+  "PIL": "pillow",
+  PILLOW: "pillow",
+  // add more as needed
+};
+
 export default function Home() {
   const [code, setCode] = useState("");
   const [requirements, setRequirements] = useState("");
@@ -27,6 +46,7 @@ export default function Home() {
   const [loadingDownload, setLoadingDownload] = useState(false);
   const textareaRef = useRef(null);
 
+  // Helper to extract import names from code
   const extractImports = (codeStr) => {
     const lines = codeStr.split("\n");
     const importsSet = new Set();
@@ -43,16 +63,64 @@ export default function Home() {
         importsSet.add(match[1].split(".")[0]);
       }
     });
-    return Array.from(importsSet).sort().join("\n");
+    return Array.from(importsSet).filter(Boolean);
   };
 
-  const generateReqs = () => {
+  // Helper to check existence of a given PyPI package (using the PyPI API)
+  async function checkPyPI(name) {
+    // Cache checks to minimize network hits in batch
+    if (!checkPyPI.cache) checkPyPI.cache = {};
+    if (name in checkPyPI.cache) return checkPyPI.cache[name];
+    try {
+      const res = await fetch(`https://pypi.org/pypi/${encodeURIComponent(name)}/json`);
+      let ok = res.ok;
+      checkPyPI.cache[name] = ok;
+      return ok;
+    } catch {
+      return false;
+    }
+  }
+
+  // The main logic: resolve to installable PyPI names
+  async function resolveToPyPI(packages) {
+    const results = [];
+    for (let origName of packages) {
+      let mapped = IMPORT_TO_PYPI[origName.toLowerCase()] || origName;
+      // Check if mapped exists on PyPI
+      let exists = await checkPyPI(mapped);
+      if (exists) {
+        results.push(mapped.toLowerCase());
+        continue;
+      }
+      // If original != mapped and original was not found, try original as fallback
+      if (mapped !== origName) {
+        exists = await checkPyPI(origName);
+        if (exists) {
+          results.push(origName.toLowerCase());
+          continue;
+        }
+      }
+      // Not found, add comment in requirements.txt
+      results.push(`# Could not resolve "${origName}" to a PyPI package`);
+    }
+    // Deduplicate, filter falsy
+    return [...new Set(results.filter(Boolean))].join("\n");
+  }
+
+  const generateReqs = async () => {
     if (loadingGenerate) return;
     setLoadingGenerate(true);
-    setTimeout(() => {
-      setRequirements(extractImports(code));
+    // Extract unique base names
+    const importNames = extractImports(code);
+    if (importNames.length === 0) {
+      setRequirements("");
       setLoadingGenerate(false);
-    }, 1400);
+      return;
+    }
+    // Resolve them to PyPI installable names or informative error
+    const resolved = await resolveToPyPI(importNames);
+    setRequirements(resolved);
+    setLoadingGenerate(false);
   };
 
   const copyReqs = async () => {
@@ -82,7 +150,7 @@ export default function Home() {
     setTimeout(() => setLoadingDownload(false), 1400);
   };
 
-  // Overlay icons
+  // Overlay icons (same as before)
   function SettingsIcon({ spinning = false, size = 90 }) {
     return (
       <svg
@@ -293,7 +361,6 @@ from sklearn.ensemble import RandomForestClassifier`}
           90% { opacity: 0.97; }
           100% { opacity: 0; }
         }
-        /* Overlay: rotating gradient border + white background, icon centered */
         .circle-border-anim {
           width: 170px;
           height: 170px;
