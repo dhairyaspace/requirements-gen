@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+html {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z' fill='%234a7c59'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+:root {
+  --jurassic-green: #4a7c59;
+  --fossil-tan: #d8b4a0;
+  --volcanic-red: #dd6e42;
+  --sky-blue: #a7c4c2;
+  --amber: #ff9f1c;
+  --deep-jungle: #1d3527;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero Section */
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.text-jurassic {
+  color: var(--jurassic-green);
+  font-weight: 700;
+}
+
+.hero-subtext {
+  font-size: 1.5rem;
+  opacity: 0;
+}
+
+/* Skills Section */
+.skills-section {
+  padding: 5rem 0;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--deep-jungle);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.skill-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.skill-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.skill-level-container {
+  margin-top: 1.5rem;
+}
+
+.skill-level-bg {
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+}
+
+.skill-level {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* Timeline Section */
+.timeline-section {
+  padding: 5rem 0;
+}
+
+.timeline {
+  background: linear-gradient(to right, var(--sky-blue) 0%, var(--sky-blue) 0%);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  padding: 2rem;
+  border-radius: 8px;
+  position: relative;
+}
+
+.timeline-item {
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+  animation-delay: calc(var(--order) * 0.3s);
+}
+
+.timeline-item h3 {
+  color: var(--volcanic-red);
+}
+
+/* Pterodactyl Animations */
+.pterodactyl {
+  position: absolute;
+  font-size: 3rem;
+  z-index: 1;
+  top: 20%;
+  left: 0;
+  opacity: 0.7;
+}
+
+.pterodactyl-cursor {
+  position: fixed;
+  font-size: 1.5rem;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtext {
+    font-size: 1.2rem;
+  }
+  
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Framer Motion specific styles */
+[data-framer-motion] {
+  will-change: transform, opacity;
+}
+
+/* Timeline Animation */
+.timeline {
+  background: linear-gradient(to right, #a7c4c2 0%, #a7c4c2 0%);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  padding: 2rem;
+  border-radius: 8px;
+  position: relative;
+}
